@@ -4,6 +4,7 @@ let
 in
 {
   imports = [
+    ./diagnostics.nix
     ./fzf-lua.nix
     ./git.nix
     ./lsp.nix
@@ -95,6 +96,8 @@ in
       enable = true;
       settings = {
         keymap.preset = "enter";
+        signature.enabled = true;
+        completion.documentation.auto_show = true;
       };
     };
 

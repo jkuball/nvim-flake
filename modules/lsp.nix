@@ -1,7 +1,6 @@
 { pkgs, lib, ... }:
 let
   inherit (lib.nixvim) mkRaw;
-  inherit (lib.nixvim.lua) toLuaObject;
 in
 {
   lsp = {
@@ -16,6 +15,7 @@ in
           diagnostics.excludedFiles = [ "generated.nix" ];
         };
       };
+      pyright.enable = true;
       ruff.enable = true;
       yamlls.enable = true;
     };
@@ -24,17 +24,6 @@ in
   plugins.fidget.enable = true;
   plugins.lsp-format.enable = true;
   plugins.lsp.enable = true;
-  plugins.lsp-lines = {
-    enable = true;
-    luaConfig.post = ''
-      vim.diagnostic.config(${
-        toLuaObject {
-          virtual_text = true;
-          virtual_lines.only_current_line = true;
-        }
-      })
-    '';
-  };
 
   keymaps = [
     # for lsp-format
