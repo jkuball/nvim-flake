@@ -26,7 +26,14 @@ in
     };
 
     plugins.notify.enable = true;
-    plugins.lualine.enable = true;
+    plugins.lualine = {
+      enable = true;
+      settings = {
+        winbar.lualine_c = [
+          (listToUnkeyedAttrs [ "navic" ])
+        ];
+      };
+    };
 
     plugins.treesitter = {
       enable = true;

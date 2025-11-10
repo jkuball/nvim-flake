@@ -25,6 +25,21 @@ in
   plugins.lsp-format.enable = true;
   plugins.lsp.enable = true;
 
+  plugins.navbuddy = {
+    enable = true;
+    settings = {
+      lsp.auto_attach = true;
+    };
+  };
+
+  plugins.navic = {
+    enable = true;
+    settings = {
+      click = true;
+      lsp.auto_attach = true;
+    };
+  };
+
   keymaps = [
     # for lsp-format
     {
