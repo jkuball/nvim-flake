@@ -7,6 +7,7 @@ in
     ./diagnostics.nix
     ./fzf-lua.nix
     ./git.nix
+    ./harpoon.nix
     ./lsp.nix
   ];
 
