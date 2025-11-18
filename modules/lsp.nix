@@ -15,6 +15,7 @@ in
           diagnostics.excludedFiles = [ "generated.nix" ];
         };
       };
+      protols.enable = true;
       pyright.enable = true;
       ruff.enable = true;
       yamlls.enable = true;
