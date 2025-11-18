@@ -12,7 +12,14 @@ in
   ];
 
   config = {
-    colorschemes.gruvbox.enable = true;
+    colorschemes.rose-pine = {
+      enable = true;
+      settings = {
+        variant = "main"; # auto, main, moon, dawn
+        dim_inactive_windows = false;
+        extend_background_behind_borders = true;
+      };
+    };
 
     globals = {
       mapleader = " ";
