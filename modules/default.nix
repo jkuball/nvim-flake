@@ -113,6 +113,7 @@ in
         keymap.preset = "enter";
         signature.enabled = true;
         completion.documentation.auto_show = true;
+        completion.list.selection.preselect = false;
       };
     };
 
