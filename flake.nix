@@ -4,7 +4,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     nixvim.url = "github:nix-community/nixvim";
-    nixvim.inputs.nuschtosSearch.follows = "";
   };
 
   outputs =
