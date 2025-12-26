@@ -18,6 +18,14 @@ in
       protols.enable = true;
       pyright.enable = true;
       ruff.enable = true;
+      rust_analyzer = {
+        enable = true;
+        # In my not so far reaching experience with rust, rust-analyzer
+        # should mostly be synced with the toolchains used in the
+        # project. So, if present, the rust-analyzer of a devshell
+        # should always be used before the bundled one.
+        packageFallback = true;
+      };
       yamlls.enable = true;
     };
   };
