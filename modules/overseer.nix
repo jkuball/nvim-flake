@@ -40,37 +40,36 @@ in
 
     local overseer = require("overseer")
 
-    -- Static tasks
+    -- Static nix tasks (using generator to properly check for flake presence)
     overseer.register_template({
-      name = "nix fmt",
-      builder = function()
-        local cwd = find_flake()
-        return {
-          cmd = { "nix", "fmt" },
-          cwd = cwd,
-        }
-      end,
-      condition = {
-        callback = function()
-          return find_flake() ~= nil
-        end,
-      },
-    })
+      name = "nix",
+      generator = function(opts, cb)
+        local flake_dir = find_flake()
+        if not flake_dir then
+          return cb({})
+        end
 
-    overseer.register_template({
-      name = "nix flake check",
-      builder = function()
-        local cwd = find_flake()
-        return {
-          cmd = { "nix", "flake", "check" },
-          cwd = cwd,
-        }
+        cb({
+          {
+            name = "nix fmt",
+            builder = function()
+              return {
+                cmd = { "nix", "fmt" },
+                cwd = flake_dir,
+              }
+            end,
+          },
+          {
+            name = "nix flake check",
+            builder = function()
+              return {
+                cmd = { "nix", "flake", "check" },
+                cwd = flake_dir,
+              }
+            end,
+          },
+        })
       end,
-      condition = {
-        callback = function()
-          return find_flake() ~= nil
-        end,
-      },
     })
 
     -- Dynamic tasks from nix flake show
@@ -151,6 +150,68 @@ in
       condition = {
         callback = function()
           return find_flake() ~= nil
+        end,
+      },
+    })
+
+    -- Nixidy tasks
+    local function nixidy_available()
+      return vim.fn.executable("nixidy") == 1
+    end
+
+    overseer.register_template({
+      name = "nixidy",
+      generator = function(opts, cb)
+        local flake_dir = find_flake()
+        if not flake_dir then
+          return cb({})
+        end
+
+        local eval_cmd = {
+          "nix", "eval", "--impure", "--json",
+          "--expr", string.format(
+            "builtins.attrNames (builtins.getFlake (toString %s)).nixidyEnvs.''${builtins.currentSystem}",
+            flake_dir
+          ),
+        }
+
+        overseer.builtin.system(
+          eval_cmd,
+          { cwd = flake_dir, text = true },
+          vim.schedule_wrap(function(out)
+            if out.code ~= 0 then
+              return cb({})
+            end
+
+            local ok, envs = pcall(vim.json.decode, out.stdout)
+            if not ok or type(envs) ~= "table" then
+              return cb({})
+            end
+
+            local tasks = {}
+            local commands = { "info", "build", "switch", "bootstrap", "apply" }
+
+            for _, env in ipairs(envs) do
+              for _, cmd in ipairs(commands) do
+                table.insert(tasks, {
+                  name = string.format("nixidy %s .#%s", cmd, env),
+                  builder = function()
+                    return {
+                      cmd = { "nixidy", cmd, ".#" .. env },
+                      cwd = flake_dir,
+                    }
+                  end,
+                })
+              end
+            end
+
+            cb(tasks)
+          end)
+        )
+      end,
+      condition = {
+        callback = function()
+          return find_flake() ~= nil and nixidy_available()
         end,
       },
     })
