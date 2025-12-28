@@ -40,7 +40,7 @@ in
 
     local overseer = require("overseer")
 
-    -- Static nix tasks (using generator to properly check for flake presence)
+    -- Static nix tasks valid for all flakes
     overseer.register_template({
       name = "nix",
       generator = function(opts, cb)
@@ -72,7 +72,7 @@ in
       end,
     })
 
-    -- Dynamic tasks from nix flake show
+    -- Dynamic tasks taken from a present flake
     overseer.register_template({
       name = "nix flake",
       generator = function(opts, cb)
@@ -154,7 +154,7 @@ in
       },
     })
 
-    -- Nixidy tasks
+    -- Nixidy tasks (https://github.com/arnarg/nixidy)
     local function nixidy_available()
       return vim.fn.executable("nixidy") == 1
     end
