@@ -9,6 +9,7 @@ in
     ./git.nix
     ./harpoon.nix
     ./lsp.nix
+    ./overseer.nix
   ];
 
   config = {
