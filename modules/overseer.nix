@@ -29,6 +29,133 @@ in
     enable = true;
   };
 
+  extraConfigLua = ''
+    local function find_flake()
+      local flake = vim.fs.find("flake.nix", { upward = true, type = "file" })[1]
+      if flake then
+        return vim.fs.dirname(flake)
+      end
+      return nil
+    end
+
+    local overseer = require("overseer")
+
+    -- Static tasks
+    overseer.register_template({
+      name = "nix fmt",
+      builder = function()
+        local cwd = find_flake()
+        return {
+          cmd = { "nix", "fmt" },
+          cwd = cwd,
+        }
+      end,
+      condition = {
+        callback = function()
+          return find_flake() ~= nil
+        end,
+      },
+    })
+
+    overseer.register_template({
+      name = "nix flake check",
+      builder = function()
+        local cwd = find_flake()
+        return {
+          cmd = { "nix", "flake", "check" },
+          cwd = cwd,
+        }
+      end,
+      condition = {
+        callback = function()
+          return find_flake() ~= nil
+        end,
+      },
+    })
+
+    -- Dynamic tasks from nix flake show
+    overseer.register_template({
+      name = "nix flake",
+      generator = function(opts, cb)
+        local flake_dir = find_flake()
+        if not flake_dir then
+          return cb({})
+        end
+
+        overseer.builtin.system(
+          { "nix", "flake", "show", "--json" },
+          { cwd = flake_dir, text = true },
+          vim.schedule_wrap(function(out)
+            if out.code ~= 0 then
+              return cb({})
+            end
+
+            local ok, data = pcall(vim.json.decode, out.stdout)
+            if not ok then
+              return cb({})
+            end
+
+            local tasks = {}
+
+            -- Helper to get current system
+            local system = vim.fn.system("nix eval --raw --impure --expr builtins.currentSystem"):gsub("%s+$", "")
+
+            local packages = data.packages and data.packages[system] or {}
+            local apps = data.apps and data.apps[system] or {}
+
+            -- Extract packages (build tasks)
+            for name, _ in pairs(packages) do
+              table.insert(tasks, {
+                name = string.format("nix build .#%s", name),
+                builder = function()
+                  return {
+                    cmd = { "nix", "build", ".#" .. name },
+                    cwd = flake_dir,
+                  }
+                end,
+              })
+            end
+
+            -- Extract run tasks: apps take priority, fallback to packages
+            for name, _ in pairs(apps) do
+              table.insert(tasks, {
+                name = string.format("nix run .#%s", name),
+                builder = function()
+                  return {
+                    cmd = { "nix", "run", ".#" .. name },
+                    cwd = flake_dir,
+                  }
+                end,
+              })
+            end
+
+            -- Add nix run for packages that don't have a corresponding app
+            for name, _ in pairs(packages) do
+              if not apps[name] then
+                table.insert(tasks, {
+                  name = string.format("nix run .#%s", name),
+                  builder = function()
+                    return {
+                      cmd = { "nix", "run", ".#" .. name },
+                      cwd = flake_dir,
+                    }
+                  end,
+                })
+              end
+            end
+
+            cb(tasks)
+          end)
+        )
+      end,
+      condition = {
+        callback = function()
+          return find_flake() ~= nil
+        end,
+      },
+    })
+  '';
+
   keymaps = [
     {
       key = "<f5>";
