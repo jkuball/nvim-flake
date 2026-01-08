@@ -43,7 +43,7 @@ in
         let
           src = pkgs.fetchurl {
             url = "https://gitmoji.dev/api/gitmojis";
-            hash = "sha256-deIjmV/50HY0PwVtlQzaXBOQhug4wEQAr5RD1JK2G/4=";
+            hash = "sha256-+bzNCqGOnVkpgvTdpWfcRtVfHQO2pX1/nYgluMA7VYo=";
           };
 
           gitmojis = map
