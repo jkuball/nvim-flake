@@ -4,6 +4,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     nixvim.url = "github:nix-community/nixvim";
+    typenix.url = "github:ryanrasti/typenix";
   };
 
   outputs =
@@ -24,6 +25,12 @@
 
       perSystem =
         { system, pkgs, ... }:
+        let
+          pkgs' = import inputs.nixpkgs {
+            inherit system;
+            overlays = [ self.overlays.default ];
+          };
+        in
         {
           treefmt.programs = {
             nixpkgs-fmt.enable = true;
@@ -31,12 +38,16 @@
           };
 
           packages."default" = nixvim.legacyPackages.${system}.makeNixvimWithModule {
-            inherit pkgs;
+            pkgs = pkgs';
             module = self.nixvimModules.default;
           };
         };
 
       flake = {
+        overlays.default = final: prev: {
+          typenix = inputs.typenix.packages.${prev.system}.typenix;
+        };
+
         nixvimModules.default = ./modules;
       };
     };

@@ -42,6 +42,7 @@ in
     settings = {
       click = true;
       lsp.auto_attach = true;
+      lsp.preference = [ "nil_ls" ];
     };
   };
 

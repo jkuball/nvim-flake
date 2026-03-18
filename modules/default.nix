@@ -10,6 +10,7 @@ in
     ./harpoon.nix
     ./lsp.nix
     ./overseer.nix
+    ./typenix.nix
   ];
 
   config = {
