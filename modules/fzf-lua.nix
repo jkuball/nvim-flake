@@ -42,14 +42,9 @@ in
       options.desc = "insert gitmoji";
       action =
         let
-          src = pkgs.fetchurl {
-            url = "https://gitmoji.dev/api/gitmojis";
-            hash = "sha256-+bzNCqGOnVkpgvTdpWfcRtVfHQO2pX1/nYgluMA7VYo=";
-          };
-
           gitmojis = map
             ({ emoji, name, description, ... }: "${emoji} | ${name} | ${description}")
-            (builtins.fromJSON (builtins.readFile src)).gitmojis;
+            (builtins.fromJSON (builtins.readFile ../gitmojis.json)).gitmojis;
         in
         mkRaw ''
           function()

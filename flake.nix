@@ -27,8 +27,8 @@
       ];
 
       perSystem =
-        # @ts: { system: string; pkgs: Nixpkgs; [key: string]: any }
-        { system, pkgs, config, ... }:
+        # @ts: { system: string; pkgs: Nixpkgs; lib: Lib, [key: string]: any }
+        { system, pkgs, lib, config, ... }:
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
@@ -48,6 +48,22 @@
             packages = [
               config.packages.default
               pkgs.typenix
+            ];
+            commands = [
+              {
+                name = "update-gitmojis";
+                help = "download the latest gitmojis";
+                command = ''
+                  new=$(curl -fsSL https://gitmoji.dev/api/gitmojis | ${lib.getExe pkgs.jq} .)
+                  old=$(cat "$PRJ_ROOT/gitmojis.json")
+                  if [ "$new" = "$old" ]; then
+                    echo "already up to date"
+                  else
+                    echo "$new" > "$PRJ_ROOT/gitmojis.json"
+                    echo "updated gitmojis.json"
+                  fi
+                '';
+              }
             ];
           };
 
