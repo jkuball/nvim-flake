@@ -1,5 +1,5 @@
 # @ts: { pkgs: Nixpkgs; lib: NixvimLib; [key: string]: any }
-{ pkgs, lib, ... }:
+{ lib, ... }:
 let
   inherit (lib.nixvim) mkRaw;
   inherit (lib.nixvim.lua) toLuaObject;
