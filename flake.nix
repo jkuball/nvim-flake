@@ -1,4 +1,9 @@
 {
+  nixConfig = {
+    extra-substituters = [ "https://jkuball.cachix.org" ];
+    extra-trusted-public-keys = [ "jkuball.cachix.org-1:+9CHwNss+Andi72M3ZruI40RLYvYkyQAcT0ou4P50m0=" ];
+  };
+
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
