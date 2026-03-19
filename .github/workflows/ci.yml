@@ -17,7 +17,7 @@ jobs:
             runner: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Install omnix
         run: nix profile install nixpkgs#omnix
