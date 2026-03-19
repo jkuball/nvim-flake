@@ -45,6 +45,13 @@
             inherit pkgs;
             module = self.nixvimModules.default;
           };
+
+          checks."typenix" = pkgs.runCommand "typenix-check"
+            { nativeBuildInputs = [ pkgs.typenix ]; }
+            ''
+              typenix -p ${self}
+              touch $out
+            '';
         };
 
       flake = {

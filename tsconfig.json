@@ -1,0 +1,13 @@
+// Not for TypeScript, but for https://github.com/ryanrasti/typenix.
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "allowArbitraryExtensions": true,
+    "typeRoots": [],
+    "noImplicitAny": true
+  },
+  "include": [
+    "**/*.nix"
+  ]
+}
