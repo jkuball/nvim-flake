@@ -8,6 +8,7 @@
     "noImplicitAny": true
   },
   "include": [
-    "**/*.nix"
+    "**/*.nix",
+    "*.d.ts"
   ]
 }

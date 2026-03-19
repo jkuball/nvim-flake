@@ -1,3 +1,4 @@
+# @ts: { pkgs: Nixpkgs; lib: NixvimLib; [key: string]: any }
 { pkgs, lib, ... }:
 let
   inherit (lib.nixvim) mkRaw;

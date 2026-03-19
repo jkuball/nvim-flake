@@ -25,6 +25,7 @@
       ];
 
       perSystem =
+        # @ts: { system: string; pkgs: Nixpkgs; [key: string]: any }
         { system, pkgs, ... }:
         {
           _module.args.pkgs = import inputs.nixpkgs {

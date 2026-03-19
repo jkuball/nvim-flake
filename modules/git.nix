@@ -1,3 +1,4 @@
+# @ts: { lib: NixvimLib; [key: string]: any }
 { lib, ... }:
 let
   inherit (lib.nixvim) listToUnkeyedAttrs;

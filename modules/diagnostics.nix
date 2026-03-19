@@ -1,3 +1,4 @@
+# @ts: { lib: NixvimLib; [key: string]: any }
 { lib, ... }:
 let
   # Not my idea, but I always wanted it.
