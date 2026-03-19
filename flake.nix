@@ -16,6 +16,7 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.treefmt-nix.flakeModule
+        inputs.flake-parts.flakeModules.easyOverlay
       ];
 
       systems = [
@@ -25,29 +26,28 @@
 
       perSystem =
         { system, pkgs, ... }:
-        let
-          pkgs' = import inputs.nixpkgs {
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
             overlays = [ self.overlays.default ];
           };
-        in
-        {
+
+          overlayAttrs = {
+            typenix = inputs.typenix.packages.${system}.typenix;
+          };
+
           treefmt.programs = {
             nixpkgs-fmt.enable = true;
             deadnix.enable = true;
           };
 
           packages."default" = nixvim.legacyPackages.${system}.makeNixvimWithModule {
-            pkgs = pkgs';
+            inherit pkgs;
             module = self.nixvimModules.default;
           };
         };
 
       flake = {
-        overlays.default = final: prev: {
-          typenix = inputs.typenix.packages.${prev.system}.typenix;
-        };
-
         nixvimModules.default = ./modules;
       };
     };
