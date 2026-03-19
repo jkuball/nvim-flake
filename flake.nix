@@ -2,8 +2,9 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
     nixvim.url = "github:nix-community/nixvim";
+    devshell.url = "github:numtide/devshell";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
     typenix.url = "github:ryanrasti/typenix";
   };
 
@@ -15,8 +16,9 @@
     } @ inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.treefmt-nix.flakeModule
+        inputs.devshell.flakeModule
         inputs.flake-parts.flakeModules.easyOverlay
+        inputs.treefmt-nix.flakeModule
       ];
 
       systems = [
@@ -26,7 +28,7 @@
 
       perSystem =
         # @ts: { system: string; pkgs: Nixpkgs; [key: string]: any }
-        { system, pkgs, ... }:
+        { system, pkgs, config, ... }:
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
@@ -40,6 +42,13 @@
           treefmt.programs = {
             nixpkgs-fmt.enable = true;
             deadnix.enable = true;
+          };
+
+          devshells."default" = {
+            packages = [
+              config.packages.default
+              pkgs.typenix
+            ];
           };
 
           packages."default" = nixvim.legacyPackages.${system}.makeNixvimWithModule {
