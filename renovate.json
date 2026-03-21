@@ -6,6 +6,13 @@
     "schedule:weekly"
   ],
   "timezone": "Europe/Berlin",
+  "packageRules": [
+    {
+      "matchManagers": ["nix"],
+      "groupName": "nix flake inputs",
+      "groupSlug": "nix-flake-inputs"
+    }
+  ],
   "nix": {
     "enabled": true
   }
