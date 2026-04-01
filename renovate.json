@@ -13,6 +13,9 @@
       "groupSlug": "nix-flake-inputs"
     }
   ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "nix": {
     "enabled": true
   }
