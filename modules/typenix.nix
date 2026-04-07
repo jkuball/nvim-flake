@@ -13,6 +13,10 @@
       cmd = { "${lib.getExe pkgs.typenix}", "--lsp", "--stdio" },
       root_markers = { "flake.nix", ".git" },
       filetypes = { "nix", "nixts" },
+      on_attach = function(client)
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+      end,
     })
     vim.lsp.enable("typenix")
   '';
